@@ -1,0 +1,47 @@
+# Ambiente virtuale
+venv/
+.venv/
+env/
+.env
+
+# File di configurazione con informazioni sensibili
+config.py
+.env
+
+# File di database e cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# File di log
+*.log
+
+# File specifici del sistema operativo
+.DS_Store
+Thumbs.db
+
+# File specifici dell'IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# File specifici del progetto
+books.json
