@@ -1,0 +1,12 @@
+# Configurazione del bot
+
+# Token del bot Telegram
+# Sostituisci con il tuo token ottenuto da BotFather
+TOKEN = "IL_TUO_TOKEN_TELEGRAM_QUI"
+
+# ID degli amministratori del bot
+# Aggiungi qui gli ID degli utenti Telegram che possono amministrare il bot
+ADMIN_IDS = [123456789,987654321]  # Sostituisci con i tuoi ID amministratori
+
+# Percorso del file per il salvataggio dei libri
+BOOKS_FILE = "books.json"
