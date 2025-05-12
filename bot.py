@@ -4,6 +4,7 @@ import hashlib # Aggiunto hashlib
 import re # Aggiunto re per la validazione dell'ID corto
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
+import sys
 
 # Abilita il logging
 logging.basicConfig(
@@ -11,8 +12,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 # Importa configurazioni dal file config.py
-from /etc/secrets/config import TOKEN, ADMIN_IDS, BOOKS_FILE
+sys.path.insert(0, '/etc/secrets')
+from config import TOKEN, ADMIN_IDS, BOOKS_FILE
 
 # Placeholder per i libri (useremo un dizionario, {file_id: {"name": nome_libro, "uploader_id": uploader_id}})
 books = {}
