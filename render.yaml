@@ -1,0 +1,14 @@
+# Exported from Render on 2025-05-12T09:59:04Z
+services:
+- type: web
+  name: bookbot
+  runtime: python
+  repo: https://github.com/Denkishi/bookbot
+  plan: free
+  envVars:
+  - key: config.py
+    sync: false
+  region: frankfurt
+  buildCommand: pip install -r requirements.txt
+  startCommand: python bot.py
+version: "1"
