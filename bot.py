@@ -5,6 +5,7 @@ import re # Aggiunto re per la validazione dell'ID corto
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 import sys
+from flask import Flask
 
 # Abilita il logging
 logging.basicConfig(
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 # Importa configurazioni dal file config.py
-#sys.path.insert(0, '/etc/secrets')
+sys.path.insert(0, '/etc/secrets')
 from config import TOKEN, ADMIN_IDS, BOOKS_FILE
 
 # Placeholder per i libri (useremo un dizionario, {file_id: {"name": nome_libro, "uploader_id": uploader_id}})
@@ -117,6 +118,12 @@ async def aiuto(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 def main() -> None:
     """Avvia il bot."""
+    # Crea server Flask per mantenere attivo il bot su Render
+    flask_app = Flask(__name__)
+    @flask_app.route('/')
+    def home():
+        return 'BookBot is running!', 200
+    
     load_books() # Carica i libri all'avvio
     # Crea l'Application e passagli il token del tuo bot.
     application = Application.builder().token(TOKEN).build()
@@ -322,6 +329,9 @@ def main() -> None:
     application.add_handler(CallbackQueryHandler(button_callback))
 
     # Avvia il Bot finché l'utente non preme Ctrl-C
+    import threading
+    flask_thread = threading.Thread(target=flask_app.run, kwargs={'host':'0.0.0.0', 'port':8000})
+    flask_thread.start()
     application.run_polling()
 
 if __name__ == "__main__":
