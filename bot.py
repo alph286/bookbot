@@ -12,7 +12,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Importa configurazioni dal file config.py
-from config import TOKEN, ADMIN_IDS, BOOKS_FILE
+from /etc/secrets/config import TOKEN, ADMIN_IDS, BOOKS_FILE
 
 # Placeholder per i libri (useremo un dizionario, {file_id: {"name": nome_libro, "uploader_id": uploader_id}})
 books = {}
