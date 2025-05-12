@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 # Importa configurazioni dal file config.py
-sys.path.insert(0, '/etc/secrets')
+#sys.path.insert(0, '/etc/secrets')
 from config import TOKEN, ADMIN_IDS, BOOKS_FILE
 
 # Placeholder per i libri (useremo un dizionario, {file_id: {"name": nome_libro, "uploader_id": uploader_id}})
@@ -234,13 +234,6 @@ def main() -> None:
         else:
             await update.message.reply_text(f"Nessun libro trovato con ID: {file_id_to_rename}")
 
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("aiuto", aiuto))
-    application.add_handler(CommandHandler("lista", list_books))
-    application.add_handler(MessageHandler(filters.Document.ALL, handle_document)) # Gestisce tutti i tipi di documenti
-    application.add_handler(CommandHandler("elimina", delete_book))
-    application.add_handler(CommandHandler("rinomina", rename_book))
-
     # Funzione per il comando /cerca
     async def search_books(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if not context.args:
@@ -325,7 +318,14 @@ def main() -> None:
             await query.message.reply_text("😕 Libro non più disponibile o ID non valido.")
 
 
+    # Aggiungi tutti gli handler necessari
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("aiuto", aiuto))
+    application.add_handler(CommandHandler("lista", list_books))
     application.add_handler(CommandHandler("cerca", search_books))
+    application.add_handler(CommandHandler("elimina", delete_book))
+    application.add_handler(CommandHandler("rinomina", rename_book))
+    application.add_handler(MessageHandler(filters.Document.ALL, handle_document))
     application.add_handler(CallbackQueryHandler(button_callback))
 
     # Avvia il Bot finché l'utente non preme Ctrl-C
