@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 # Importa configurazioni dal file config.py
-#sys.path.insert(0, '/etc/secrets')
+sys.path.insert(0, '/etc/secrets')
 from config import TOKEN, ADMIN_IDS, BOOKS_FILE
 
 # Placeholder per i libri (useremo un dizionario, {file_id: {"name": nome_libro, "uploader_id": uploader_id}})
