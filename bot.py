@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 # Importa configurazioni dal file config.py
-sys.path.insert(0, '/etc/secrets')
+#sys.path.insert(0, '/etc/secrets')
 from config import TOKEN, ADMIN_IDS, BOOKS_FILE
 
 # Placeholder per i libri (useremo un dizionario, {file_id: {"name": nome_libro, "uploader_id": uploader_id}})
@@ -153,6 +153,9 @@ def main() -> None:
 
         keyboard = []
         message_text = "📚 Ecco i libri disponibili:\n"
+        user_id = update.effective_user.id
+        is_user_admin = is_admin(user_id)
+        
         for file_id, book_info in books.items():
             short_id = book_info.get('short_id')
             if not is_valid_short_id_format(short_id):
@@ -161,6 +164,8 @@ def main() -> None:
             
             # Usa solo lo short_id come callback_data per rispettare il limite di 64 byte
             button_text = f"{book_info['name']}"
+            if is_user_admin:
+                button_text += f" [ID: {short_id}]"
             keyboard.append([InlineKeyboardButton(button_text, callback_data=short_id)])
         
         if not keyboard:
@@ -251,15 +256,22 @@ def main() -> None:
 
         keyboard = []
         message_text = f"🔎 Risultati della ricerca per '{search_term}':\n\n"
+        user_id = update.effective_user.id
+        is_user_admin = is_admin(user_id)
         
         for file_id, book_info, short_id in found_books_details:
             # short_id è già stato validato e recuperato
             # Usa solo lo short_id come callback_data per rispettare il limite di 64 byte
             button_text = f"📖 {book_info['name']}"
+            if is_user_admin:
+                button_text += f" [ID: {short_id}]"
             keyboard.append([InlineKeyboardButton(button_text, callback_data=short_id)])
             
             # Aggiungi il nome del libro alla lista testuale
-            message_text += f"• {book_info['name']}\n"
+            message_text += f"• {book_info['name']}"
+            if is_user_admin:
+                message_text += f" [ID: {short_id}]"
+            message_text += "\n"
         
         if not keyboard:
             await update.message.reply_text(f"😕 Nessun libro valido trovato per '{search_term}' dopo il filtraggio.")
@@ -288,14 +300,23 @@ def main() -> None:
         
         if found_book_file_id:
             try:
+                # Invia il documento
                 await context.bot.send_document(chat_id=query.message.chat.id, document=found_book_file_id, filename=book_to_send_name)
                 logger.info(f"Download richiesto per {book_to_send_name} (FileID: {found_book_file_id}, ShortID: {short_id_from_callback}) da utente {query.from_user.id}")
+                
+                # Controlla se l'utente è un amministratore
+                user_id = query.from_user.id
+                if is_admin(user_id):
+                    # Invia un messaggio aggiuntivo con l'ID completo del file
+                    await context.bot.send_message(chat_id=query.message.chat.id, text=f"ID completo del file: {found_book_file_id}")
+                    logger.info(f"ID completo inviato per {book_to_send_name} a admin {user_id}")
             except Exception as e:
                 logger.error(f"Errore durante l'invio del documento {found_book_file_id} (ShortID: {short_id_from_callback}): {e}")
                 await query.message.reply_text("😕 Si è verificato un errore durante il tentativo di inviare il libro.")
         else:
             logger.warning(f"Libro non trovato con short_id: {short_id_from_callback}. Dati callback: {data}")
             await query.message.reply_text("😕 Libro non più disponibile o ID non valido.")
+
 
     application.add_handler(CommandHandler("cerca", search_books))
     application.add_handler(CallbackQueryHandler(button_callback))
